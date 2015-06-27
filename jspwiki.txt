@@ -1,0 +1,231 @@
+jspwiki是一个不错的wiki引擎，纯jsp/servlet写的.JSPWiki不使用现成的数据库管理软件，
+所有的文件以文本文件的形式存放,它利用类似CVS的机制保证了文件版本的完整性.
+支持中文，支持版本比较，权限管理等功能.
+
+修改JSPWiki配置
+ 可以通过wiki配置页面http://localhost:8080/JSPWiki/Install.jsp进行配置,也可以通过直
+接修改jspwiki.properties进行配置
+
+如何修改左边栏
+方法一:找到工程/lestMenu.txt,就可以编辑了
+方法二:
+   输入-->http://localhost:8080/JSPWiki/Edit.jsp?page=LeftMenu
+   
+   
+JSP(Java Server Page)是Java服务器端动态页面技术，是sun公司制订的一种服务器的
+动态页面生成技术规范.
+
+因为直接使用Servlet,虽然也可以生成动态页面，但是，编写繁琐（需要使用out.println来
+输出），并且维护困难(如果页面发生了改变，需要修改Java代码).所以sun指定了JSP规范.
+
+jsp其实是一个以.jsp为后缀的文件，容器会自动将.jsp文件转换成一个.java文件（其实就是一
+个Servlet）,然后调用该Servlet,从本质上讲，JSP其实就是一个Servlet.
+
+JSP是如何运行的?
+  1.容器依据.jsp文件生成.java文件(也就是先转换成一个Servlet).
+  2.<%   %>也放到service方法里，照搬，不用改动
+  3.<%= %>也会放到service方法里，使用out.print输出.
+  4.<%! %>给Servlet添加新的属性或者新的方法（转成.java文件后，声明内的部分添加
+  在service方法之外）
+  
+  这样就把一个JSP变成了一个Servlet容器.
+  
+  容器接下来会调用Servlet来处理请求了(会将之前生成的.java文件进行编译，然后实例化，
+  初始化，调用相应的方法处理请求).
+  
+  
+  pageContext对象:容器会为每一个JSP实例(JSP所对应的哪个Servlet对象)创建一个唯一
+的一个符合pageContext接口的对象.称之为page上下文，该对象会一直存在，除非JSP
+实例被销毁.
+   它的作用:1.绑定数据（绑定的数据只有对应的JSP实例才可以访问）
+            setAttribute,removeAttribute,getAttribute
+			2.找到其他八个隐含对象
+	
+ config对象:即ServletConfig,可以使用该对象获得初始化参数
+      如 company:<%=config.getInitParameter("company")%>
+	  
+指令:
+  指令是什么:
+    通知容器，在将.jsp文件转换成.java文件时，作一些额外的处理，比如导包.
+  指令的语法:
+     <%@指令名称  属性名=属性值  %>
+	
+  page指令:
+     1.import属性:导包  
+	    <%@page import="java.util.*" %>
+		<%@page import="java.util.*,java.text.*" %>
+		多个包以逗号隔开，都在一个双引号里
+		
+	 2.contentType属性:设置response.setContentType的内容
+	 <%@page import="java.util.*" contentType="text/html;charset=utf-8" %>
+	 
+	 3.pageEncoding属性:告诉容器.jsp的文件的编码格式，这样,容器在获取.jsp文件
+的内容（解码）
+
+  tablib 指令:
+     导入jsp标签<%@taglib uri="命名空间" prefix="前缀" %>
+	 
+  include指令:
+     <%@include file="head.jsp" %>
+	 file属性:对于页面的公共部分，我们可以使用相同的.jsp文件，并使用include指令导入.
+	告诉容器，在将.jsp文件转换成.java文件时，在指令所在的位置插入相应的文件的“内容”，
+	插入的页面并未运行，而是机械的将内容插入.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  /JSPWiki/Edit.jsp?page=This%20the%20five
+  
+内置的用户/角色有如下:
+All,指的是所有用户
+
+Anonymous:指的是匿名用户，即不登录，也不提供带用户信息的cookie
+Asserted,指的是带用户信息的cookie
+Authenticated,指的是经用户数据库验证的用户
+Admin,是管理员组
+由此可见，如果支持cookie的话，Authenticated用户组是Asserted用户的子集，Asserted用户
+组包含了临时账号和正式账号,Authenticated.
+
+页面级别的权限控制如下:
+  页面级别的权限控制要比全局控制的优先级高
+  
+
+什么是JSP标签
+   sun公司制定的一种技术规范，利用JSP标签(类似于HTML标签)来代替JSP中的Java代码，
+这样做的好处是,JSP页面会更加简洁,并且更好维护（比如，将这样的页面交给美工，可以
+很方便地去修改）
+
+  $(user.name)
+  容器会依次从4个隐含对象中pageContext,request,session,application中查找绑定名为
+  "user"的对象,接下来，会调用对象的getName方法
+
+  http://localhost:8080/JSPWiki/Edit.jsp?page=LeftMenu
+  http://localhost:8080/JSPWiki/Wiki.jsp?page=LeftMenuFooter
+  
+
+  
+  
+  <label for="changenote">更改注释</label>
+  
+  
+  一单击保存，就执行这个action
+     /JSPWiki/Edit.jsp?page=LeftMenuFooter
+	 
+	 name="ok"
+	 
+	 当点编辑时出现/JSPWiki/Edit.jsp?page=leftMenuFooter页面
+	 所以新增时应该href="/JSPWikiEdit.jsp?page=LeftMenuFooter"
+	 
+	 但是界面应出现:新增标题
+	                新增内容
+					
+	 点保存里form里的action为/JSPWiki/Edit.jsp?page=我们刚刚加进去的标题名
+	 
+	/JSPWiki/Edit.jsp?page=?到底代表了什么
+					
+	
+  
+ 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
